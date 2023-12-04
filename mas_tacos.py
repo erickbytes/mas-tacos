@@ -1,14 +1,11 @@
 from flask import Flask, send_from_directory, request
 from geopy import distance
-from datetime import date
 import pandas as pd
-import random
 import logging
 import os
 import sys
 
-"""
-Requirements
+"""Requirements
 - enable taco button click --> trigger "best tacos" page
 - users can enter their zip code
 - look up lat long coords from zip code
@@ -19,8 +16,6 @@ TODO
 - (location) Permissions API for the Web: https://developers.google.com/web/updates/2015/04/permissions-api-for-the-web
 - Google review API? Or other review source?
 - user collected sauce ratings & heat ratings
-- add favicon
-- responsive number of taco images
 """
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 app = Flask(__name__)
@@ -28,6 +23,7 @@ app = Flask(__name__)
 
 @app.route("/static/tacofavicon.ico")
 def favicon():
+    """Render the site favicon in Flask."""
     try:
         return send_from_directory(
             os.path.join(app.root_path, "static"),
@@ -40,7 +36,8 @@ def favicon():
 
 @app.route("/")
 def find_tacos():
-    html_page = f"""<html><head><link rel='stylesheet' href="/static/styles/mastacos.css">
+    """Renders the HTML form to ask for the user's zip code."""
+    html_page = """<html><head><link rel='stylesheet' href="/static/styles/mastacos.css">
                     <link rel="shortcut icon" type="image/x-icon" href="/static/tacofavicon.ico">
                     <Title>mas tacos</Title></head>
                     <body>
@@ -54,7 +51,7 @@ def find_tacos():
 
 
 def get_taco_rating(number):
-    """return random.randint(0, 6) x taco image"""
+    """Returns an HTML string of taco images, with the # of tacos being the given number."""
     taco = """<img src="/static/iStock-1084361584.jpg" alt="find tacos" width="40" height="40" >"""
     tacos = list()
     for i in range(0, number):
@@ -69,8 +66,7 @@ def calculate_distance(restaurant_loc, user_loc):
 
 
 def look_up_lat_long(zip_code):
-    """Returns lat long pair by looking up zip code.
-    Data is separated with ;"""
+    """Returns lat long pair by looking up zip code. Data is separated with ;"""
     cols = ["Zip", "Latitude", "Longitude", "geopoint"]
     zips = pd.read_csv("us-zip-code-latitude-and-longitude.csv", usecols=cols, sep=";")
     matches = zips[zips.Zip.astype(str) == str(zip_code)].reset_index(drop=True)
@@ -84,6 +80,8 @@ def look_up_lat_long(zip_code):
 
 
 def get_taco_restaurants(zip_code):
+    """Read a csv of taco restaurants with their longitude and latitude coordinates.
+    Returns restaurant with the same zip code."""
     cols = [
         "name",
         "address",
@@ -123,7 +121,7 @@ def get_best_tacos():
             mapping = {"miles_away": "miles away", "menus.description": "type of food"}
             tacos = (
                 tacos[cols]
-                                                                                                       .rename(columns=mapping)
+                .rename(columns=mapping)
                 .fillna("")
                 .drop_duplicates(subset=["name", "address"])
             )
