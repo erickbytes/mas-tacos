@@ -1,0 +1,21 @@
+/*body {*/
+/*    font-family: 'Helvetica', 'Arial', sans-serif;*/
+/*    color: #444444;*/
+/*    font-size: 9pt;*/
+/*    max-width: 500px;*/
+/*    margin: auto;*/
+/*}*/
+
+html, body {
+    height: 100%;
+}
+
+html {
+    display: table;
+    margin: auto;
+}
+
+body {
+    display: table-cell;
+    vertical-align: middle;
+}
