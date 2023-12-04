@@ -6,4 +6,4 @@ a US taco restaurant finding Flask app. Restaurant data is sourced from the [Kag
 
 !["mas tacos" App Restaurants View](taco-restaurants-example.png "view a list of taco restaurants")
 
-Note: this app is running very slowly. Optimizing speed is top priority and hopefully will be solved soon.
+Note: this app is running very slowly, so you may need to wait 5-10 seconds to see taco restauraunt results.
