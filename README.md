@@ -1,5 +1,5 @@
 # mas-tacos
-a US taco restaurant finding Flask app
+a US taco restaurant finding Flask app. Restaurant data is sourced from the [Kaggle "restaurants that sell burritos and tacos" dataset](https://www.kaggle.com/datasets/vainero/restaurants-that-sell-burritos-tacos-in-the-us)
 
 !["mas tacos" App Form View](enter-zip-for-tacos.png "enter zip code for tacos near you")
 
