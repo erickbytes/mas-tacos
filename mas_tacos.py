@@ -81,7 +81,7 @@ def look_up_lat_long(zip_code):
 
 def get_taco_restaurants(zip_code):
     """Read a csv of taco restaurants with their longitude and latitude coordinates.
-    Returns restaurant with the same zip code."""
+    Returns restaurants with the same zip code."""
     cols = [
         "name",
         "address",
