@@ -89,7 +89,9 @@ def taco_restaurants():
 
 
 def calculate_distance(restaurant_loc, user_loc):
-    """Returns distance in miles to taco restaurant based on zip code."""
+    """Returns distance in miles to taco restaurant based on zip code.
+    Uses the geopy module: https://pypi.org/project/geopy/
+    """
     return distance.distance(user_loc, restaurant_loc).miles
 
 
