@@ -42,7 +42,7 @@ def find_tacos():
                     <Title>mas tacos</Title></head>
                     <body>
                     <div class="form">
-                    <form action="/get_best_tacos" method="post">
+                    <form action="/taco_restaurants" method="post">
                     <label for="zipcode">Enter your zip code for tacos near you!</label>
                     <input type="text" id ="zipcode" name="zipcode">
                     <input type="image" id="taco" src="/static/iStock-1084361584.jpg" border="0" alt="Submit" />
@@ -50,59 +50,8 @@ def find_tacos():
     return html_page
 
 
-def get_taco_rating(number):
-    """Returns an HTML string of taco images, with the # of tacos being the given number."""
-    taco = """<img src="/static/iStock-1084361584.jpg" alt="find tacos" width="40" height="40" >"""
-    tacos = list()
-    for i in range(0, number):
-        tacos.append(taco)
-    taco_html = "".join(tacos)
-    return taco_html
-
-
-def calculate_distance(restaurant_loc, user_loc):
-    """Returns distance in miles to taco restaurant based on zip code."""
-    return distance.distance(user_loc, restaurant_loc).miles
-
-
-def look_up_lat_long(zip_code):
-    """Returns lat long pair by looking up zip code. Data is separated with ;"""
-    cols = ["Zip", "Latitude", "Longitude", "geopoint"]
-    zips = pd.read_csv("us-zip-code-latitude-and-longitude.csv", usecols=cols, sep=";")
-    matches = zips[zips.Zip.astype(str) == str(zip_code)].reset_index(drop=True)
-    if matches.empty:
-        return zips
-    else:
-        latitude = matches.at[0, "Latitude"]
-        longitude = matches.at[0, "Longitude"]
-        user_loc = (latitude, longitude)
-        return user_loc
-
-
-def get_taco_restaurants(zip_code):
-    """Read a csv of taco restaurants with their longitude and latitude coordinates.
-    Returns restaurants with the same zip code."""
-    cols = [
-        "name",
-        "address",
-        "city",
-        "country",
-        "postalCode",
-        "latitude",
-        "longitude",
-        "menus.description",
-    ]
-    tacos = pd.read_csv("just tacos and burritos.csv", usecols=cols)
-    tacos = tacos.dropna(subset=["latitude", "longitude"])
-    matches = tacos[tacos.postalCode.astype(str) == str(zip_code)].drop_duplicates()
-    if matches.empty:
-        return tacos
-    else:
-        return matches
-
-
-@app.route("/get_best_tacos", methods=["GET", "POST"])
-def get_best_tacos():
+@app.route("/taco_restaurants", methods=["GET", "POST"])
+def taco_restaurants():
     """restaurant reviews & taco rating 4/5 tacos
     "how delicious are the sauces?"
     "thermometer for the heat of the sauces"
@@ -110,9 +59,9 @@ def get_best_tacos():
     """
     try:
         zip_code = request.form["zipcode"]
-        tacos = get_taco_restaurants(zip_code)
-        user_loc = look_up_lat_long(zip_code)
-        if type(user_loc) is tuple:
+        tacos = query_taco_restaurants(zip_code)
+        user_loc = query_lat_long(zip_code)
+        if isinstance(user_loc, tuple):
             tacos["miles_away"] = tacos[["latitude", "longitude"]].apply(
                 calculate_distance, args=(user_loc,), axis=1
             )
@@ -137,3 +86,54 @@ def get_best_tacos():
     except:
         logging.exception("Unable to find tacos!")
         return "Sorry! Taco-nical difficulties."
+
+
+def calculate_distance(restaurant_loc, user_loc):
+    """Returns distance in miles to taco restaurant based on zip code."""
+    return distance.distance(user_loc, restaurant_loc).miles
+
+
+def query_lat_long(zip_code):
+    """Returns lat long pair by looking up zip code. Data is separated with ;"""
+    cols = ["Zip", "Latitude", "Longitude", "geopoint"]
+    zips = pd.read_csv("us-zip-code-latitude-and-longitude.csv", usecols=cols, sep=";")
+    matches = zips[zips.Zip.astype(str) == str(zip_code)].reset_index(drop=True)
+    if matches.empty:
+        return zips
+    else:
+        latitude = matches.at[0, "Latitude"]
+        longitude = matches.at[0, "Longitude"]
+        user_loc = (latitude, longitude)
+        return user_loc
+
+
+def query_taco_restaurants(zip_code):
+    """Read a csv of taco restaurants with their longitude and latitude coordinates.
+    Returns restaurants with the same zip code."""
+    cols = [
+        "name",
+        "address",
+        "city",
+        "country",
+        "postalCode",
+        "latitude",
+        "longitude",
+        "menus.description",
+    ]
+    tacos = pd.read_csv("just tacos and burritos.csv", usecols=cols)
+    tacos = tacos.dropna(subset=["latitude", "longitude"])
+    matches = tacos[tacos.postalCode.astype(str) == str(zip_code)].drop_duplicates()
+    if matches.empty:
+        return tacos
+    else:
+        return matches
+
+
+def taco_rating(number):
+    """Returns an HTML string of taco images, with the # of tacos being the given number."""
+    taco = """<img src="/static/iStock-1084361584.jpg" alt="find tacos" width="40" height="40" >"""
+    tacos = list()
+    for i in range(0, number):
+        tacos.append(taco)
+    taco_html = "".join(tacos)
+    return taco_html
